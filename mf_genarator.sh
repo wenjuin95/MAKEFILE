@@ -9,7 +9,7 @@ path_input=""
 function ft_input_the_rest()
 {
 	while true; do # Check if the user needs bonus input
-		read -p "Do you need bonus input? (y/n): " bonus_input
+		read -p "Do you need bonus section? (y/n): " bonus_input
 		case $bonus_input in # Check if the user needs bonus input
 			[yY]* ) # If the user needs bonus input
 				echo -en "CFLAGS = -Wall -Wextra -Werror\n\n" >> $FILE

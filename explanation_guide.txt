@@ -1,41 +1,39 @@
-# name of the executable file
-NAME = example
+1. name of the executable file
+	NAME = example
 
-# compiler
-CC = gcc
+2. compiler
+	CC = gcc
 
-# flags
-CFLAGS = -Wall -Wextra -Werror
+3. flags
+	CFLAGS = -Wall -Wextra -Werror
 
-# source files
-SRC = example.c example2.c example3.c
+4. source files
+	SRC = example.c example2.c example3.c
 
-# object files
-OBJ_SRC = $(SRC:.c=.o) # $(SRC:.c=.o) = $(SRC) files with .c replaced by .o
+5. object files
+	OBJ_SRC = $(SRC:.c=.o)   [ "$(SRC:.c=.o)" is source files with .c replaced by .o ]
 
-# rule to compile the program (all is the name of the rule)
-all: $(NAME) # $(NAME) is the name of the executable file
+6. rule to compile the program (all is the name of the rule)
+	all: $(NAME)  [ "$(NAME)" is the name of the executable file ]
 
-# rule to compile the program (it compiles the object files and links them)
-# $@ is the name of the executable file
-$(NAME) : $(OBJ_SRC) 
-	$(CC) $(CFLAGS) $(OBJ_SRC) -o $@ 
+7. rule to compile the program (it compiles the object files and links them)
+	$(NAME) : $(OBJ_SRC) 
+		$(CC) $(CFLAGS) $(OBJ_SRC) -o $@  [ "$@" is the name of the executable file ]
 
-#rule that says how to make ".o" file from ".c" file
-# $< is the name of the source file
-%.o : %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+8. rule that says how to make ".o" file from ".c" file
+	%.o : %.c
+		$(CC) $(CFLAGS) -c $< -o $@ [ "$<" is the name of the source file ]
 
-# rule to clean the object files
-clean :
-	rm -f $(OBJ_SRC)
+9. rule to clean the object files
+	clean :
+		rm -f $(OBJ_SRC)
 
-# rules to clean the object files and the executable file
-fclean : clean
-	rm -f $(NAME)
+10. rules to clean the object files and the executable file
+	fclean : clean
+		rm -f $(NAME)
 
-# rules to recompile the program (it cleans the object files and recompile the program)
-re : fclean all
+11. rules to recompile the program (it cleans the object files and recompile the program)
+	re : fclean all
 
-# .PHONY is to tell make that the rules all, clean, fclean and re are not files
-.PHONY: all clean fclean re 
+12. ".PHONY" is to tell make that the rules all, clean, fclean and re are not files
+	.PHONY: all clean fclean re 

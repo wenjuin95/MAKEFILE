@@ -15,34 +15,39 @@ function ft_input_the_rest()
 				echo -en "CFLAGS = -Wall -Wextra -Werror\n\n" >> $FILE
 				echo -en "SRC = \n\n" >> $FILE
 				echo -en "BONUS = \n\n" >> $FILE
-				echo -en "OBJ_SRC = \$(SRC:.c=.o)\n\n" >> $FILE
-				echo -en "OBJ_BONUS = \$(BONUS:.c=.o)\n\n" >> $FILE
+				echo -en "OBJ_FOLDER = object_files\n\n" >> $FILE
+				echo -en "OBJ_SRC = \$(addprefix \$(OBJ_FOLDER)/, \$(SRC:.c=.o))\n\n" >> $FILE
+				echo -en "OBJ_BONUS = \$(addprefix \$(OBJ_FOLDER)/, \$(BONUS:.c=.o))\n\n" >> $FILE
 				echo -en "all : \$(NAME)\n\n" >> $FILE
 				echo -en "\$(NAME) : \$(OBJ_SRC)\n" >> $FILE
 				echo -en "\t\$(CC) \$(CFLAGS) \$(OBJ_SRC) -o \$@\n\n" >> $FILE
-				echo -en "%.o : %.c\n" >> $FILE
+				echo -en "\$(OBJ_FOLDER)/%.o : %.c | \$(OBJ_FOLDER)\n" >> $FILE
 				echo -en "\t\$(CC) \$(CFLAGS) -c $< -o \$@\n\n" >> $FILE
+				echo -en "\$(OBJ_FOLDER):\n" >> $FILE
+				echo -en "\t@mkdir -p \$(OBJ_FOLDER)\n\n" >> $FILE
 				echo -en "clean :\n" >> $FILE
-				echo -en "\trm -f \$(OBJ_SRC)\n" >> $FILE
-				echo -en "\trm -f \$(OBJ_BONUS)\n\n" >> $FILE
+				echo -en "\trm -rf \$(OBJ_FOLDER)\n\n" >> $FILE
 				echo -en "fclean : clean\n" >> $FILE
 				echo -en "\trm -f \$(NAME)\n\n" >> $FILE
 				echo -en "re : fclean all\n\n" >> $FILE
 				echo -en "bonus : \$(OBJ_BONUS)\n" >> $FILE
-				echo -en "\t\$(CC) \$(CFLAGS) \$(OBJ_BONUS) -o \$@\n\n" >> $FILE
+				echo -en "\t\$(CC) \$(CFLAGS) \$(OBJ_BONUS) -o \$(NAME)\n\n" >> $FILE
 				echo -en ".PHONY: all clean fclean re bonus\n" >> $FILE
 				break;;
 			[nN]* ) # If the user does not need bonus input
 				echo -en "CFLAGS = -Wall -Wextra -Werror\n\n" >> $FILE
 				echo -en "SRC = \n\n" >> $FILE
-				echo -en "OBJ_SRC = \$(SRC:.c=.o)\n\n" >> $FILE
+				echo -en "OBJ_FOLDER = object_files\n\n" >> $FILE
+				echo -en "OBJ_SRC = \$(addprefix \$(OBJ_FOLDER)/, \$(SRC:.c=.o))\n\n" >> $FILE
 				echo -en "all : \$(NAME)\n\n" >> $FILE
 				echo -en "\$(NAME) : \$(OBJ_SRC)\n" >> $FILE
 				echo -en "\t\$(CC) \$(CFLAGS) \$(OBJ_SRC) -o \$@\n\n" >> $FILE
-				echo -en "%.o : %.c\n" >> $FILE
+				echo -en "\$(OBJ_FOLDER)/%.o : %.c | \$(OBJ_FOLDER)\n" >> $FILE
 				echo -en "\t\$(CC) \$(CFLAGS) -c $< -o \$@\n\n" >> $FILE
+				echo -en "\$(OBJ_FOLDER):\n" >> $FILE
+				echo -en "\t@mkdir -p \$(OBJ_FOLDER)\n\n" >> $FILE
 				echo -en "clean :\n" >> $FILE
-				echo -en "\trm -f \$(OBJ_SRC)\n\n" >> $FILE
+				echo -en "\trm -rf \$(OBJ_FOLDER)\n\n" >> $FILE 
 				echo -en "fclean : clean\n" >> $FILE
 				echo -en "\trm -f \$(NAME)\n\n" >> $FILE
 				echo -en "re : fclean all\n\n" >> $FILE

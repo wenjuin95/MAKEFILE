@@ -1,39 +1,86 @@
-1. name of the executable file
-	NAME = example
+1. Name :: execution name
+NAME = 
 
-2. compiler
-	CC = gcc
+========================================================================================
 
-3. flags
-	CFLAGS = -Wall -Wextra -Werror
+2. CC :: the compiler that you want to use
+CC = 
 
-4. source files
-	SRC = example.c example2.c example3.c
+========================================================================================
 
-5. object files
-	OBJ_SRC = $(SRC:.c=.o)   [ "$(SRC:.c=.o)" is source files with .c replaced by .o ]
+3. CFLAGS :: the flags that you want to compile
+CFLAGS = 
 
-6. rule to compile the program (all is the name of the rule)
-	all: $(NAME)  [ "$(NAME)" is the name of the executable file ]
+========================================================================================
 
-7. rule to compile the program (it compiles the object files and links them)
-	$(NAME) : $(OBJ_SRC) 
-		$(CC) $(CFLAGS) $(OBJ_SRC) -o $@  [ "$@" is the name of the executable file ]
+4. SRC :: the files that you want to compile
+SRC = 
 
-8. rule that says how to make ".o" file from ".c" file
-	%.o : %.c
-		$(CC) $(CFLAGS) -c $< -o $@ [ "$<" is the name of the source file ]
+========================================================================================
 
-9. rule to clean the object files
-	clean :
-		rm -f $(OBJ_SRC)
+5. BONUS :: the bonus files that you want to compile
+BONUS = 
 
-10. rules to clean the object files and the executable file
-	fclean : clean
-		rm -f $(NAME)
+========================================================================================
 
-11. rules to recompile the program (it cleans the object files and recompile the program)
-	re : fclean all
+6. object_files :: the folder that put all the ".o" files
+OBJ_FOLDER = object_files
 
-12. ".PHONY" is to tell make that the rules all, clean, fclean and re are not files
-	.PHONY: all clean fclean re 
+========================================================================================
+
+7. addprefix :: add the folder path to the object files to put to the folder
+OBJ_SRC = $(addprefix $(OBJ_FOLDER)/, $(SRC:.c=.o))
+OBJ_BONUS = $(addprefix $(OBJ_FOLDER)/, $(BONUS:.c=.o))
+
+========================================================================================
+
+8. all :: compile the executable file that is "$(NAME)" target
+all : $(NAME)
+
+========================================================================================
+
+9. "$@" is the target means $(NAME)
+$(NAME) : $(OBJ_SRC)
+	$(CC) $(CFLAGS) $(OBJ_SRC) -o $@
+
+========================================================================================
+
+10. "/" is a separator, so the target is "object_files/*.o" and the prerequisite is "*.c
+    "|"  means that the target will be created before the "%.o : %.c"
+    "%.o : %.c" means make ".o" file from ".c" file
+$(OBJ_FOLDER)/%.o : %.c | $(OBJ_FOLDER)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+========================================================================================
+
+11. create the folder
+$(OBJ_FOLDER):
+	@mkdir -p $(OBJ_FOLDER)
+
+========================================================================================
+
+12. clean the object folder that contain object files
+clean :
+	rm -rf $(OBJ_FOLDER)
+
+========================================================================================
+
+13. clean the object folder and the executable file
+fclean : clean
+	rm -f $(NAME)
+
+========================================================================================
+
+14. clean the object folder and the executable file, then recompile the executable file
+re : fclean all
+
+========================================================================================
+
+15. make bonus part
+bonus : $(OBJ_BONUS)
+	$(CC) $(CFLAGS) $(OBJ_BONUS) -o $(NAME)
+
+========================================================================================
+
+16. ".PHONY" :: mean that the target is not a file
+.PHONY: all clean fclean re bonus

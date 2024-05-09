@@ -1,4 +1,4 @@
-# MF-Generator
+# MAKEFILE
 this is a Makefile generator that generate a simple makefile for my project.
 
 # How to execute

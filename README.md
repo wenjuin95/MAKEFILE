@@ -1,5 +1,6 @@
 # MAKEFILE
 this is a Makefile generator that generate a simple makefile for my project.
+(only for executable file)
 
 # How to execute
 <pre>

@@ -48,6 +48,7 @@ SRC = $(shell find $(FILE_DIR) -type f -name '*.c')
 ----------------------------------------------------
 1. stores all .c files inside src/.
 2. Runs the "find" command in the shell to locate all .c files in the folder directory
+   example: it will get "src/file.c" instead of just "file.c"
 
 
 --------------------------
@@ -59,8 +60,9 @@ OBJ_FOLDER = object_files
 -----------------------------------------------------
 OBJ_SRC = $(patsubst %.c, $(OBJ_FOLDER)/%.o, $(SRC))
 -----------------------------------------------------
-1. stores object file names corresponding to SRC
-2. Converts each .c file path in SRC to an object .o file inside object_files/.
+1. transforming a list of .c files ($(SRC)) into a list of corresponding .o files ($(OBJ_FOLDER)/%.o).
+2. It does this by substituting the .c extension with .o and placing the .o files into the directory specified by $(OBJ_FOLDER).
+3. example: If $(SRC) contains "src/file1.c" "src/file2.c", and $(OBJ_FOLDER) is obj/, then OBJ_SRC will become obj/src//file1.o obj/src/file2.o.
 
 
 --------------------------
@@ -106,56 +108,58 @@ all : $(NAME)
 1. Builds the $(NAME) executable
 
 
---------------------------------------------------------------------------
-fsan: fclean $(OBJ_SRC)
-	make -C $(MLX_DIR)
+--------------------------------------------------------------------------------------
+fsan : fclean $(OBJ_SRC)
+	make -C $(MINILIBX_DIR)
 	make -C libft
-	$(CC) $(CFLAGS) $(FSANITIZE) $(OBJ_SRC) $(INC) $(LIBFT_DIR)-o $(NAME)
+	$(CC) $(CFLAGS) $(FSANITIZE) $(OBJ_SRC) $(INC) $(LIBFT_DIR) $(MINILIBX_FLAGS) -o $(NAME)
 	@echo "${GREEN}-----COMPILED FSAN DONE-----\n${RESET}"
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 1. Runs fclean (removes old files).
 2. Compile object files.
 3. Compile all directory and get ".a" file
 4. Compile with -fsanitize=address to detect memory issues and ".a" files
 
 
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 $(NAME) : $(OBJ_SRC)
-	make -C $(MLX_DIR)
+	make -C $(MINILIBX_DIR)
 	make -C libft
-	$(CC) $(CFLAGS) $(OBJ_SRC) $(INC) $(LIBFT_DIR) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ_SRC) $(INC) $(LIBFT_DIR) $(MINILIBX_FLAGS) -o $(NAME)
 	@echo "${GREEN}-----COMPILED DONE-----\n${RESET}"
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 1. Compile object files.
 2. Compile all directory and get ".a" file
 3. Compile with ".a" files
 
 
----------------------------------
+---------------------------------------
 $(OBJ_FOLDER)/%.o : %.c
-	@mkdir -p $(OBJ_FOLDER)
-	$(CC) $(CFLAGS) -c $< -o $@
----------------------------------
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+---------------------------------------
 1. Ensures object_files/ exists ( if not create one)
 2. Compiles each .c file into an .o file.
+3. $(dir $@) :: extracts the directory portion of the target file name
+	example:  if the target is src/file.o, $(dir $@) will return src/, which is the directory where the object file should be placed.
 3. $< :: First prerequisite (source file).
 4. $@ :: Target file (output .o file).
 
 
 ---------------------------------
-clean :
+clean:
 	rm -rf $(OBJ_FOLDER)
+	make clean -C $(MINILIBX_DIR)
 	make clean -C libft
-	make clean -C $(MLX_DIR)
 ---------------------------------
 1. Deletes object files (object_files/).
 2. Cleans up libft and mlx ".o" files
 
 
 ---------------------------------------------------------
-fclean : clean
+fclean: clean
+	make fclean -C $(MINILIBX_DIR)
 	make fclean -C libft
-	make fclean -C $(MLX_DIR)
 	rm -f $(NAME)
 	@echo "${GREEN}-----REMOVED ALL FILES-----\n${RESET}"
 ---------------------------------------------------------

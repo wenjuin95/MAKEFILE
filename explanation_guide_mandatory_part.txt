@@ -1,0 +1,177 @@
+Makefiles allow defining variables to avoid repetition and improve maintainability.
+
+VARIABLE : use to store path, file and etc
+
+
+-----------
+NAME = mian
+-----------
+1. name of the final compiled executable
+
+
+---------
+CC = gcc
+---------
+1.  specifies the compiler
+
+
+-------------------------------
+FSANITIZE = -fsanitize=address
+-------------------------------
+1.enables AddressSanitizer, which helps detect memory errors like buffer overflows.
+
+
+----------------------------------
+CFLAGS = -Wall -Wextra -Werror -g3
+----------------------------------
+1. compiler flag
+2. -Wall   :: enable all warning
+3. -Wextra :: enable extra warning
+4. -Werror :: treat warning as error
+5.. -g3     :: enable debugging info (mostly -g, if have number mean is the version)
+
+
+----------------
+INC = -I include
+----------------
+1. adds an include directory for header files
+
+
+--------------
+FILE_DIR = src
+--------------
+1. defines the directory containing .c source files.
+
+
+----------------------------------------------------
+SRC = $(shell find $(FILE_DIR) -type f -name '*.c')
+----------------------------------------------------
+1. stores all .c files inside src/.
+2. Runs the "find" command in the shell to locate all .c files in the folder directory
+
+
+--------------------------
+OBJ_FOLDER = object_files
+--------------------------
+1. the directory where object (.o) files will be stored.
+
+
+-----------------------------------------------------
+OBJ_SRC = $(patsubst %.c, $(OBJ_FOLDER)/%.o, $(SRC))
+-----------------------------------------------------
+1. stores object file names corresponding to SRC
+2. Converts each .c file path in SRC to an object .o file inside object_files/.
+
+
+--------------------------
+LIBFT_DIR = libft/libft.a
+--------------------------
+1. the path to the libft library
+
+
+--------------------------------------------------------------------------
+ifeq ($(shell uname), Linux)
+	MLX_DIR = minilibx-linux
+	MINILIBX_LIBRARY = -L$(MINILIBX) -lmlx -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz
+else
+	MLX_DIR = minilibx
+	MINILIBX_LIBRARY = -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit
+endif
+--------------------------------------------------------------------------
+1. Checks the OS using $(shell uname).
+	i. If uname returns Linux:
+			Uses minilibx-linux with X11 graphics library.
+	   Otherwise (macOS):
+			Uses minilibx with OpenGL and AppKit frameworks.
+
+-------------------
+GREEN = \033[0;32m
+RESET = \033[0m
+-------------------
+1. just a color code
+
+MAKEFILE RULE
+-----------------------
+target: dependencies
+	commands
+-----------------------
+target       :: The output file or task name
+dependencies :: Files required before executing the target.
+commands     :: Shell commands to execute.
+
+
+--------------
+all : $(NAME)
+--------------
+1. Builds the $(NAME) executable
+
+
+--------------------------------------------------------------------------
+fsan: fclean $(OBJ_SRC)
+	make -C $(MLX_DIR)
+	make -C libft
+	$(CC) $(CFLAGS) $(FSANITIZE) $(OBJ_SRC) $(INC) $(LIBFT_DIR)-o $(NAME)
+	@echo "${GREEN}-----COMPILED FSAN DONE-----\n${RESET}"
+--------------------------------------------------------------------------
+1. Runs fclean (removes old files).
+2. Compile object files.
+3. Compile all directory and get ".a" file
+4. Compile with -fsanitize=address to detect memory issues and ".a" files
+
+
+--------------------------------------------------------------------------
+$(NAME) : $(OBJ_SRC)
+	make -C $(MLX_DIR)
+	make -C libft
+	$(CC) $(CFLAGS) $(OBJ_SRC) $(INC) $(LIBFT_DIR) -o $(NAME)
+	@echo "${GREEN}-----COMPILED DONE-----\n${RESET}"
+--------------------------------------------------------------------------
+1. Compile object files.
+2. Compile all directory and get ".a" file
+3. Compile with ".a" files
+
+
+---------------------------------
+$(OBJ_FOLDER)/%.o : %.c
+	@mkdir -p $(OBJ_FOLDER)
+	$(CC) $(CFLAGS) -c $< -o $@
+---------------------------------
+1. Ensures object_files/ exists ( if not create one)
+2. Compiles each .c file into an .o file.
+3. $< :: First prerequisite (source file).
+4. $@ :: Target file (output .o file).
+
+
+---------------------------------
+clean :
+	rm -rf $(OBJ_FOLDER)
+	make clean -C libft
+	make clean -C $(MLX_DIR)
+---------------------------------
+1. Deletes object files (object_files/).
+2. Cleans up libft and mlx ".o" files
+
+
+---------------------------------------------------------
+fclean : clean
+	make fclean -C libft
+	make fclean -C $(MLX_DIR)
+	rm -f $(NAME)
+	@echo "${GREEN}-----REMOVED ALL FILES-----\n${RESET}"
+---------------------------------------------------------
+1. Run clean First
+2. Cleans up libft and mlx ".o" files and ".a" files
+3. Deletes the executable file
+
+
+----------------
+re : fclean all
+----------------
+1. Cleans everything and rebuilds from scratch.
+
+
+----------------------------
+.PHONY: all clean fclean re
+----------------------------
+1. Declares that all, clean, fclean, and re are not actual files.
+2. Prevents conflicts if a file with the same name exists.

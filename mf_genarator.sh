@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# color
+GREEN="\033[0;32m"
+RESET="\033[0m"
+RED="\033[0;31m"
+
 FILE="Makefile"
 bonus_input=""
 project_input=""
@@ -148,49 +153,70 @@ function ft_c_makefile()
 	fi
 }
 
-echo -en " __  __ _____    ____ _____ _   _ _____ ____     _  _____ ___  ____  \n"
-echo -en "|  \/  |  ___|  / ___| ____| \ | | ____|  _ \   / \|_   _/ _ \|  _ \ \n"
-echo -en "| |\/| | |_    | |  _|  _| |  \| |  _| | |_) | / _ \ | || | | | |_) |\n"
-echo -en "| |  | |  _|   | |_| | |___| |\  | |___|  _ < / ___ \| || |_| |  _ < \n"
-echo -en "|_|  |_|_|      \____|_____|_| \_|_____|_| \_/_/   \_|_| \___/|_| \_\ \n\n"
+function note()
+{
+	echo -en $GREEN
+	echo -en " __  __ _____    ____ _____ _   _ _____ ____     _  _____ ___  ____  \n"
+	echo -en "|  \/  |  ___|  / ___| ____| \ | | ____|  _ \   / \|_   _/ _ \|  _ \ \n"
+	echo -en "| |\/| | |_    | |  _|  _| |  \| |  _| | |_) | / _ \ | || | | | |_) |\n"
+	echo -en "| |  | |  _|   | |_| | |___| |\  | |___|  _ < / ___ \| || |_| |  _ < \n"
+	echo -en "|_|  |_|_|      \____|_____|_| \_|_____|_| \_/_/   \_|_| \___/|_| \_\ \n\n"
+	echo -en "+---------------------------------------------------------------------------------------------------------+\n"
+	echo -en "|NOTE:                                                                                                    |\n"
+	echo -en "|=====                                                                                                    |\n"
+	echo -en "|1. FILE_DIR / BONUS_DIR => folder where your source files are located. so don't put files just put folder|\n"
+	echo -en "|   example: FILE_DIR = src parsing execution (each of them is a folder)                                  |\n"
+	echo -en "|2. if bonus is combine with mandatory is recomended to choose "n" for bonus                                |\n"
+	echo -en "|3. you libft must had the combination of ft_printf and gnl and bonus                                     |\n"
+	echo -en "|4. all directory must be same directory as your Makefile                                                 |\n"
+	echo -en "+---------------------------------------------------------------------------------------------------------+\n"
+	echo -en $RESET
+}
+
+note
 
 # Prompt blank makefile
-echo -en "which Makefile you want to create for?\n CPP => y\n C => n\n(y/n): "
+echo -en "which Makefile you want to create for?\n 1. CPP makefile\n 2. C makefile\n \rChoose [1/2]: "
 read blank_input
-while [[ ! "$blank_input" =~ ^[yYnN]$ ]]; do
-	echo "Invalid input. Please answer y or n."
-	echo -en "which Makefile you want to create for?\n CPP => y\n C => n\n(y/n): "
+while [[ ! "$blank_input" =~ ^[12]$ ]]; do
+	echo -en $RED"Invalid input. Please answer 1 or 2.\n"$RESET
+	echo -en "which Makefile you want to create for?\n 1. CPP makefile\n 2. C makefile\n \rChoose [1/2]: "
 	read blank_input
 done
 
 # Prompt for the project name
+clear
 echo -en "Project name: "
 read project_input
 
 # Prompt for the compiler
-if [[ "$blank_input" =~ ^[nN]$ ]]; then
+if [[ "$blank_input" == "2" ]]; then
 	echo -en "Compiler: "
 	read compiler_input
 
 	# prompt for bonus input
-	read -p "Do you need bonus section? (y/n): " bonus_input
+	echo -en "Do you need bonus section?\n \rChoose (y/n): "
+	read bonus_input
 	while [[ ! "$bonus_input" =~ ^[yYnN]$ ]]; do
-		echo "Invalid input. Please answer y or n."
-		read -p "Do you need bonus section? (y/n): " bonus_input
+		echo -en $RED"Invalid input. Please answer y or n.\n"$RESET
+		echo -en "Do you need bonus section?\n \rChoose (y/n): "
+		read bonus_input
 	done
 
 	# Prompt for minilibx input
-	read -p "Do you need minilibx directory? (y/n): " minilibx_input
+	echo -en "Do you need minilibx directory?\n \rChoose (y/n): "
+	read minilibx_input
 	while [[ ! "$minilibx_input" =~ ^[yYnN]$ ]]; do
-		echo "Invalid input. Please answer y or n."
-		read -p "Do you need minilibx directory? (y/n): " minilibx_input
+		echo -en $RED"Invalid input. Please answer y or n.\n"$RESET
+		echo -en "Do you need minilibx directory?\n \rChoose (y/n)"
+		read minilibx_input
 	done
 
 fi
 
 # Prompt for the directory and validate it
 while true; do
-	echo -en "\rEnter the directory for Makefile? (if leave blank you will get current directory)\n: "
+	echo -en "\rEnter the directory for Makefile? (if leave blank you will get current directory)\n \rEnter your directory: "
 	read path_input
 	# If no input is provided, default to the current directory
 	if [ -z "$path_input" ]; then
@@ -201,39 +227,43 @@ while true; do
 	if [ -d "$path_input" ]; then
 		break
 	else
-		echo "Error: Directory '$path_input' does not exist. Please enter a valid directory."
+		echo -en $RED"Error: Directory '$path_input' does not exist. Please enter a valid directory.\n"$RESET
 	fi
 done
 
-#animation progress bar
+# animation progress bar
 echo -en "Loading..."
-sleep 1
-echo -en "\r█▒▒▒▒▒▒▒▒▒ 10%" #\r is used to overwrite the previous line
-sleep 1
-echo -en "\r███▒▒▒▒▒▒▒ 30%"
-sleep 1
-echo -en "\r█████▒▒▒▒▒ 50%"
-sleep 1
-echo -en "\r███████▒▒▒ 70%"
-sleep 1
-echo -en "\r██████████ 100%"
-sleep 1
+for i in {1..50}; do
+    # Calculate the percentage
+    percent=$((i * 2))
+    # Print the progress bar
+    echo -en "\r["
+    for j in $(seq 1 $i); do
+        echo -n "█"
+    done
+    for j in $(seq $((i + 1)) 50); do
+        echo -n "▒"
+    done
+    echo -n "] $percent%"
+    sleep 0.1
+done
+echo -en "\n\n"
 
 # Create the Makefile
 touch $FILE
-if [[ "$blank_input" =~ ^[yY]$ ]]; then
+if [[ "$blank_input" == "1" ]]; then
 	ft_cpp_makefile
 else
 	ft_c_makefile
 fi
 
 # Optional: Move the Makefile if a custom directory is
- if [[ "$blank_input" =~ ^[yY]$ ]]; then
+ if [[ "$blank_input" == "1" ]]; then
 	if [ -n "$path_input" ] && [ "$path_input" != "./" ]; then
 		mv ./Makefile "$path_input/Makefile"
-		echo -en "\rMakefile created\n"
+		echo -en $GREEN"\r                         Makefile created\n"$RESET
 	else
-		echo -en "\rMakefile created\n"
+		echo -en $GREEN"\r                         Makefile created\n"$RESET
 	fi
 else
 	if [ -n "$path_input" ] && [ "$path_input" != "./" ]; then
@@ -244,7 +274,7 @@ else
 			mkdir -p "$path_input/bonus"
 		fi
 		mv ./Makefile "$path_input/Makefile"
-		echo -en "\rMakefile created\n"
+		echo -en $GREEN"\r                         Makefile created\n"$RESET
 	else
 		# If no path is provided, create directories in the current directory
 		mkdir -p ./src
@@ -252,6 +282,6 @@ else
 		if [[ "$bonus_input" =~ ^[yY]$ ]]; then
 			mkdir -p ./bonus
 		fi
-		echo -en "\rMakefile created\n"
+		echo -en $GREEN"\r                         Makefile created\n"$RESET
 	fi
 fi

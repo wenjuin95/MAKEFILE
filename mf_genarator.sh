@@ -77,10 +77,10 @@ function ft_c_makefile()
 	if [[ "$minilibx_input" =~ ^[yY]$ ]]; then
 		echo -en "ifeq (\$(shell uname -s), Linux)\n" >> $FILE
 		echo -en "\tMINILIBX_DIR = minilibx-linux\n" >> $FILE
-		echo -en "\tMINILIBX_FLAGS = -L\$(MINILIBX) -lmlx -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz\n" >> $FILE
+		echo -en "\tMINILIBX_FLAGS = -L\$(MINILIBX_DIR) -lmlx -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz\n" >> $FILE
 		echo -en "else\n" >> $FILE
 		echo -en "\tMINILIBX_DIR = minilibx\n" >> $FILE
-		echo -en "\tMINILIBX_FLAGS = -L\$(MINILIBX) -lmlx -framework OpenGL -framework AppKit\n" >> $FILE
+		echo -en "\tMINILIBX_FLAGS = -L\$(MINILIBX_DIR) -lmlx -framework OpenGL -framework AppKit\n" >> $FILE
 		echo -en "endif\n\n" >> $FILE
 	fi
 
@@ -123,7 +123,6 @@ function ft_c_makefile()
 
 	echo -en "fclean: clean\n" >> $FILE
 	if [[ "$minilibx_input" =~ ^[yY]$ ]]; then
-		echo -en "\tmake fclean -C \$(MINILIBX_DIR)\n" >> $FILE
 		echo -en "\tmake fclean -C libft\n" >> $FILE
 	else
 		echo -en "\tmake fclean -C libft\n" >> $FILE
